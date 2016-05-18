@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mojo.bean.MojoBean">
+  <typeAlias type="mojo.bean.BoardBean" alias="board"/>
+  <select id="BoardList" parameterClass="java.util.HashMap" resultClass="board">
+  	SELECT RM,OBOARD_NO,USER_ID,OBOARD_TYPE,OBOARD_TITLE,OBOARD_PASS,OBOARD_CONTENTS,OBOARD_HIT,OBOARD_REGDATE,OBOARD_REF,OBOARD_STEP,OBOARD_LEV, OBOARD_REPLY,OBOARD_PNUM 
+	FROM(
+	SELECT ROWNUM RM,OBOARD_NO,USER_ID,OBOARD_TYPE,OBOARD_TITLE,OBOARD_PASS,OBOARD_CONTENTS,OBOARD_HIT,OBOARD_REGDATE,OBOARD_REF,OBOARD_STEP,OBOARD_LEV, OBOARD_REPLY,OBOARD_PNUM 
+  	FROM OLD_BOARD
+  	<dynamic prepend="WHERE">
+  		<isEqual property="job" compareValue="notice">
+  			OBOARD_TYPE = 'notice'
+  		</isEqual>
+  	</dynamic>
+  	order by OBOARD_REGDATE DESC)
+  	WHERE RM BETWEEN #start# AND #end#
+  </select>
+  <update id="boardHitUpdate" parameterClass="java.lang.Integer">
+  	UPDATE OLD_BOARD SET OBOARD_HIT=OBOARD_HIT+1 WHERE OBOARD_NO=#pk#
+  </update>
+  <select id="BoardInfo" parameterClass="java.lang.Integer" resultClass="board">
+  	SELECT OBOARD_NO,USER_ID,OBOARD_TYPE,OBOARD_TITLE,OBOARD_PASS,OBOARD_CONTENTS,OBOARD_HIT,OBOARD_REGDATE,OBOARD_REF,OBOARD_STEP,OBOARD_LEV, OBOARD_REPLY,OBOARD_PNUM 
+  	FROM OLD_BOARD WHERE OBOARD_NO=#pk#
+  </select>
+	<select id="getBoardPrimary" resultClass="java.lang.Integer">
+  	SELECT OLD_BOARD_SEQ.NEXTVAL FROM DUAL 
+  </select>
+	<insert id="boardInsert" parameterClass="board">
+  	INSERT INTO OLD_BOARD VALUES(#Oboard_no#,#user_id#,#Oboard_type#,#Oboard_title#,#Oboard_pass#,#Oboard_contents#,0,SYSDATE,'0','0','0','0','0')
+  </insert>
+  <select id="getTotalRow" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+  	SELECT COUNT(*) FROM OLD_BOARD
+  	<dynamic prepend="WHERE">
+  		<isEqual property="job" compareValue="notice">
+  			OBOARD_TYPE = #job#
+  		</isEqual>
+  	</dynamic>
+  </select>
+  <delete id="boardDelete" parameterClass="java.util.HashMap">
+  	DELETE FROM OLD_BOARD WHERE OBOARD_NO=#no# AND OBOARD_TYPE = #job#
+  </delete>
+  <update id="boardUpdate" parameterClass="java.util.HashMap">
+  	UPDATE OLD_BOARD SET OBOARD_TITLE=#Oboard_title#,OBOARD_CONTETNS=#Oboard_contents#
+  	WHERE OBOARD_NO=#no# AND OBOARD_TYPE=#job#
+  </update>
+<!-- private int Oboard_no;
+	private String user_id;
+	private String Oboard_type;
+	private String Oboard_title;
+	private String Oboard_pass;
+	private String Oboard_contents;
+	private String Oboard_hit;
+	private String Oboard_regdate;
+	private int Oboard_ref;
+	private int Oboard_step;
+	private int Oboard_lev;
+	private int Oboard_reply;
+	private int Oboard_pnum; -->
+</sqlMap>
+
+
+
+
+
+
+
+
+
+
+
+
